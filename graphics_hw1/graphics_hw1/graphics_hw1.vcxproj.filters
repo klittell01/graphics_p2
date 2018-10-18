@@ -26,6 +26,9 @@
     <ClInclude Include="Meshclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="glm\glm\vec3.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="glut32.lib">

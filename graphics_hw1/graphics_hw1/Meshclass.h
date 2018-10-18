@@ -205,12 +205,11 @@ public:
 
 
 	double X(double u, double v) {
-		return (cos(v));
+		return (cos(u)*cos(v));
 	}
 
 	double Y(double u, double v) {
-		return u + .001;
-		//return (cos(u));
+		return (cos(v)*sin(u));
 	}
 
 	double Z(double u, double v) {
@@ -233,13 +232,6 @@ public:
 	void makeSurfaceMesh()
 
 	{
-		double dub = 0;
-		double myY[5] = { 0, .25, .5, .75, 1 };
-
-		for (int q = 0; q < 1; q++) {
-			myY[q] = dub;
-			dub += .01;
-		}
 
 		int i, j, numValsU = 100, numValsV = 100;// set these
 
@@ -263,37 +255,19 @@ public:
 
 		norm = new Vector3[numNorms]; assert(norm != NULL);
 
-		bool goBack = false;
-		double myX = 0;
-		double k = 0;
-		double thisU = 0.001;
-		for (i = 0, u = uMin; i < numValsU; i++, u += delU) {
-			thisU += .01;
+
+
+		for (i = 0, u = uMin; i < numValsU; i++, u += delU)
+
 			for (j = 0, v = vMin; j < numValsV; j++, v += delV)
 
 			{
-				// made changes here
-				/*
-				if (k < 1) {
-					k += .02;
-				}
-				if (myX < .5 && !goBack) {
-					myX += .02;
-					if (myX > .45) {
-						goBack = true;
-					}
-				}
-				else {
-					myX -= .04;
-				}
-				*/
+
 				int whichVert = i * numValsV + j; //index of the vertex and normal
 
 												  // set this vertex: use functions X, Y, and Z
-				//for (int p = 0; p < 5; p++) {
-					pt[whichVert].set(X(u, v), thisU, Z(u, v)); // and here
-					//printf("my Y is: f%", myY[p]);
-				//}
+
+				pt[whichVert].set(X(u, v), Y(u, v), Z(u, v));
 
 				// set the normal at this vertex: use functions nx, ny, nz
 
@@ -332,7 +306,7 @@ public:
 				}
 
 			}
-		}
+
 	}
 
 
@@ -376,5 +350,4 @@ public:
 
 
 };
-
 

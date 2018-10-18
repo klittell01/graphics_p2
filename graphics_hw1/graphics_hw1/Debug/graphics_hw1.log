@@ -1,8 +1,3 @@
 ﻿  Source.cpp
-c:\users\klittell\source\repos\graphics_hw1\graphics_hw1\source.cpp(169): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
-c:\users\klittell\source\repos\graphics_hw1\graphics_hw1\source.cpp(170): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
-c:\users\klittell\source\repos\graphics_hw1\graphics_hw1\source.cpp(200): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
-c:\users\klittell\source\repos\graphics_hw1\graphics_hw1\source.cpp(212): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
-c:\users\klittell\source\repos\graphics_hw1\graphics_hw1\source.cpp(213): warning C4838: conversion from 'double' to 'GLfloat' requires a narrowing conversion
-c:\users\klittell\source\repos\graphics_hw1\graphics_hw1\source.cpp(307): warning C4326: return type of 'main' should be 'int' instead of 'void'
-  graphics_hw1.vcxproj -> C:\Users\klittell\source\repos\graphics_hw1\Debug\graphics_hw1.exe
+c:\users\klittell\documents\graphics_p2\graphics_hw1\graphics_hw1\source.cpp(146): warning C4326: return type of 'main' should be 'int' instead of 'void'
+  graphics_hw1.vcxproj -> C:\Users\klittell\Documents\graphics_p2\graphics_hw1\Debug\graphics_hw1.exe

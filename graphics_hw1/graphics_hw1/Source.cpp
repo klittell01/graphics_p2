@@ -1,9 +1,3 @@
-
-#include "GL/glut.h" //modify this for your environment
-#include <math.h>
-#include <stdio.h>
-
-
 #include <string>
 
 #include <iostream>
@@ -11,7 +5,13 @@
 #include <fstream>
 
 #include <strstream>
+
+#include <vector>
+//#include <glm/vec3.hpp> // glm::vec3
+
 using namespace std;
+
+
 
 #include <windows.h> //change if using xWindows
 
@@ -30,8 +30,14 @@ using namespace std;
 #include "Meshclass.h"
 
 
-
 //<<<<<<<<<<<<<<<<<<< axis >>>>>>>>>>>>>>
+
+float angle = 0.0f;
+float myX = 50;
+float myY = 50;
+float myZ = 50;
+float lx = 0.0f;
+float lz = -0.1f;
 
 void axis(double length)
 
@@ -55,249 +61,82 @@ void axis(double length)
 
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<< displayWire >>>>>>>>>>>>>>>>>>>>>>
 
-void displayWire(void)
+void displayObjOfRev(void)
 
 {
-	//Mesh * M;
-	//M = new Mesh();
+	Mesh * M;
+	M = new Mesh();
 
-	//glMatrixMode(GL_PROJECTION); // set the view volume shape
+	glMatrixMode(GL_PROJECTION); // set the view volume shape
 
 	glLoadIdentity();
 
-	//glOrtho(-2.0 * 64 / 48.0, 2.0 * 64 / 48.0, -2.0, 2.0, 0.1, 100);
+	gluPerspective(45, 1.333, .5f, 150);
 
 	glMatrixMode(GL_MODELVIEW); // position and aim the camera
 
 	glLoadIdentity();
 
-	//gluLookAt(2.0, 2.0, 2.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+	gluLookAt(myX, myY, myZ, 0, 0, 0, 0.0, 1.0, 0.0);
 
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glColor3d(1, 0, 0); // draw black lines
-	//M->makeSurfaceMesh();
-	//M->draw();
-}
+	M->makeSurfaceMesh();
+	M->draw();
 
-
-
-// angle of rotation for the camera direction
-float angle = 0.0;
-// actual vector representing the camera's direction
-float lx = 0.0f, lz = -1.0f;
-// XZ position of the camera
-float x = 0.0f, z = 5.0f;
-
-
-
-
-void MyCube(GLfloat size, GLfloat segment_length) {
-	glPolygonMode(GL_BACK, GL_NONE);
-	glPolygonMode(GL_FRONT, GL_FILL);
-
-	glPushMatrix(); {
-		GLfloat myZ = 0.0;
-		GLfloat newZ = segment_length;
-
-		GLfloat y_offset = 0.0;
-		GLfloat y_change = 0.00;
-
-		int i = 0;
-		int j = 0;
-	//	for (j = 0; j < 20; j++) {
-			glPushMatrix(); {
-				glColor3f(0.51, 0.87, 0.15);
-				glBegin(GL_QUADS); {
-					for (i = 20; i >= 0; i--) {
-						glVertex3i(0, 0, i);
-						glVertex3i(0, 1 * size, i);
-						glVertex3i(1 * size, 1 * size, i);
-						glVertex3i(1 * size, 0, i);
-
-						//GLfloat theta = i * 3.1415 / 180;
-						//GLfloat x = radius * cos(theta);
-						//GLfloat y = radius * sin(theta) + y_offset;
-
-						//glVertex3f(x, y, z1);
-						//glVertex3f(x, y, z2);
-					}
-	//			} 
-				glEnd();
-			} glPopMatrix();
-
-			// attach the front of the next segment to the back of the previous
-			myZ = newZ;
-			newZ += segment_length;
-
-			// make some other adjustments
-			//y_offset += y_change;
-		}
-	} glPopMatrix();
-}
-
-
-void displayObjects(void)
-
-{
-	
-	glMatrixMode(GL_PROJECTION); // set the view volume shape
-	glLoadIdentity();
-	gluPerspective(45.0f, 640/480, 0.1f, 100.0f);
-
-	glMatrixMode(GL_MODELVIEW); // position and aim the camera
-	glLoadIdentity();
-	gluLookAt(x + 5, 5.0f, z + 5, 0, 0, 0, 0.0f, 1.0f, 0.0f);
-
-	
-     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
-     glColor3d(1,0,0); // draw black lines
-
-	glDisable(GL_LIGHT0); 
-
-	glPushMatrix();
-	glTranslated(0, 1.5, -1); //lightPos
-	glutSolidSphere(0.1, 10, 10);
-	glPopMatrix();
-
-	glEnable(GL_LIGHT0);
-
-	//MyCube(2.0f, 2.0f);
-	//glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
-
-	GLfloat amb[] = {0.6f, 0.6f, 0.6, 0.5f};  // ambient 
-        GLfloat diff[] = {0.9f, 0.9f, 0.9, 0.5};  // diffuse 
-        GLfloat spec[] = {1,1, 1, 1};           // specular
-
-	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, amb);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE, diff);
-        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
-	glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS, 200.0);
-   
-	glPushMatrix();	
-	glTranslated(0,1,0);
-	glutSolidSphere(0.25, 10, 8);
-	glPopMatrix();	
-
-	
-	
-	GLfloat amb2[] = {1.0f, 0.0f, 0.0, 1.0f};  // ambient 
-   	 GLfloat diff2[] = {1.0f, 0.0f, 0.0, 1.0};  // diffuse 
-
-	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, amb2);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE, diff2);
-    	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
-	glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS, 7.0);
-
-	glPushMatrix();	
-	glTranslated(-0.5,-0.2,0.2);
-	glutSolidCone(0.2, 0.5, 10, 8);
-	glPopMatrix();
-
-	
-	GLfloat amb3[] = {0.6f, 0.6f, 1.0, 0.3f};  // ambient 
-   	 GLfloat diff3[] = {0.9f, 0.9f, 1.0, 0.3};  // diffuse 
-   
-	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, amb3);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE, diff3);
-   	 glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
-	glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS, 7.0);
-	glPushMatrix();
-
-	glTranslated(-2,1,1);
-	glutSolidTeapot(0.2); 
-	glPopMatrix();
-
-	GLfloat amb4[] = {0.6f, 1.0f, 0.6, 0.4f};  // ambient 
-   	 GLfloat diff4[] = {0.9f, 1.0f, 0.9, 0.4};  // diffuse 
-    
-	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, amb4);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE, diff4);
-   	 glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
-	glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS, 7.0);
-
-	glPushMatrix();
-	glTranslated(1,1,1);
-	glRotated(90.0, 1,0,0);
-	glutSolidTorus(0.1, 0.3, 10,10);
-	glPopMatrix();
-		
-	GLfloat amb5[] = {1.0f, 0.0f, 1.0, 0.5f};  // ambient 
-   	 GLfloat diff5[] = {1.0f, 0.0f, 1.0, 0.5};  // diffuse 
-    
-	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT, amb5);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE, diff5);
-   	 glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
-	glMaterialf(GL_FRONT_AND_BACK,GL_SHININESS, 7.0);
-
-	glPushMatrix();
-	glTranslated(1,1.5,1);
-	glTranslated(1.0, 0 ,0); // dodecahedron at (1,0,0)
-	glScaled(0.15, 0.15, 0.15);
-	glutSolidDodecahedron();
-	glPopMatrix();
 
 
 	glFlush();
-	glutSwapBuffers(); 
 
 }
 
-
-void processSpecialKeys(int key, int xx, int yy) {
-	float fraction = 0.1f;
-
-	switch (key) {
-	case GLUT_KEY_LEFT:
-		angle -= 0.01f;
-		lx = sin(angle);
-		lz = -cos(angle);
-		break;
-	case GLUT_KEY_RIGHT:
-		angle += 0.01f;
-		lx = sin(angle);
-		lz = -cos(angle);
-		break;
-	case GLUT_KEY_UP:
-		printf("pushing up key");
-		x += lx * fraction;
-		z += lz * fraction;
-		break;
-	case GLUT_KEY_DOWN:
-		x -= lx * fraction;
-		z -= lz * fraction;
-		break;
-	}
-}
-
-
-
-void initLighting(){
+void initLighting() {
 
 	glEnable(GL_LIGHTING);
 
-   // set up light colors (ambient, diffuse, specular)
+	// set up light colors (ambient, diffuse, specular)
 
-    GLfloat lightKa[] = {0.8f, 0.8f, 0.8f, 1.0f};  // ambient light
-    GLfloat lightKd[] = {0.8f, 0.8f, 0.8f, 1.0f};  // diffuse light
-    GLfloat lightKs[] = {0.8f, 0.8f, 0.8f, 1};           // specular light
-    glLightfv(GL_LIGHT0, GL_AMBIENT, lightKa);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightKd);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, lightKs);
-	
-    // position the light
-    float lightPos[4] = {0, 1.5, -1,1};
+	GLfloat lightKa[] = { 1.2f, 0.0f, 0.0f, 1.0f };  // ambient light
+	GLfloat lightKd[] = { 1.7f, 0.0f, 0.0f, 1.0f };  // diffuse light
+	GLfloat lightKs[] = { 1, 0, 0, 1 };           // specular light
 
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
-    glEnable(GL_LIGHT0);                        // MUST enable each light source after configuration
+	glLightfv(GL_LIGHT0, GL_AMBIENT, lightKa);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightKd);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, lightKs);
 
-	
-
-
+	// position the light
+	float lightPos[4] = { 0, 10, -20, 1 }; // positional light
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+	glEnable(GL_LIGHT0);                        // MUST enable each light source after configuration
 
 }
 
+void camLook(int key, int x, int y) {	
+	float fraction = 0.1f;
+
+	switch (key) {
+		case GLUT_KEY_LEFT:
+			angle -= 0.01f;
+			lx = sin(angle);
+			lz = -cos(angle);
+			break;
+		case GLUT_KEY_RIGHT:
+			angle += 0.01f;
+			lx = sin(angle);
+			lz = -cos(angle);
+			break;
+		case GLUT_KEY_UP:
+			myX += lx * fraction;
+			myZ += lz * fraction;
+			break;
+		case GLUT_KEY_DOWN:
+			myX -= lx * fraction;
+			myZ -= lz * fraction;
+			break;
+	}
+}
 
 
 //<<<<<<<<<<<<<<<<<<<<<< main >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -305,27 +144,84 @@ void initLighting(){
 void main(int argc, char **argv)
 
 {
+	//std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
+	//std::vector< vec3 > temp_vertices;
+	//std::vector< vec2 > temp_uvs;
+	//std::vector< vec3 > temp_normals;
+
+	//FILE * file = fopen(path, "r");
+	//if (file == NULL) {
+	//	printf("Impossible to open the file !\n");
+	//	return false;
+	//}
+
+	//while (1) {
+
+	//	char lineHeader[128];
+	//	// read the first word of the line
+	//	int res = fscanf(file, "%s", lineHeader);
+	//	if (res == EOF) {
+	//		break; // EOF = End Of File. Quit the loop.
+	//	}
+	//	if (strcmp(lineHeader, "v") == 0) {
+	//		glm::vec3 vertex;
+	//		fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
+	//		temp_vertices.push_back(vertex);
+	//	}
+	//	else if (strcmp(lineHeader, "vt") == 0) {
+	//		glm::vec2 uv;
+	//		fscanf(file, "%f %f\n", &uv.x, &uv.y);
+	//		temp_uvs.push_back(uv);
+	//	}
+	//	else if (strcmp(lineHeader, "vn") == 0) {
+	//		glm::vec3 normal;
+	//		fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z);
+	//		temp_normals.push_back(normal);
+	//	}
+	//	else if (strcmp(lineHeader, "f") == 0) {
+	//		std::string vertex1, vertex2, vertex3;
+	//		unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
+	//		int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2]);
+	//		if (matches != 9) {
+	//			printf("File can't be read by our simple parser : ( Try exporting with other options\n");
+	//			return false;
+	//		}
+	//		vertexIndices.push_back(vertexIndex[0]);
+	//		vertexIndices.push_back(vertexIndex[1]);
+	//		vertexIndices.push_back(vertexIndex[2]);
+	//		uvIndices.push_back(uvIndex[0]);
+	//		uvIndices.push_back(uvIndex[1]);
+	//		uvIndices.push_back(uvIndex[2]);
+	//		normalIndices.push_back(normalIndex[0]);
+	//		normalIndices.push_back(normalIndex[1]);
+	//		normalIndices.push_back(normalIndex[2]);
+	//	}
+	//}
+	//
+	//// For each vertex of each triangle
+	//for (unsigned int i = 0; i < vertexIndices.size(); i++) {
+	//	unsigned int vertexIndex = vertexIndices[i];
+	//	glm::vec3 vertex = temp_vertices[vertexIndex - 1];
+	//	out_vertices.push_back(vertex);
+	//}
 
 	glutInit(&argc, argv);
 
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB );
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
 
-	glutInitWindowSize(640,480);
+	glutInitWindowSize(640, 480);
 
 	glutInitWindowPosition(100, 100);
 
-	glutCreateWindow("Materials and Lighting testbed");
+	glutCreateWindow("Graphics Project 2");
 
-
-
-	glutDisplayFunc(displayObjects);
-	glutSpecialFunc(processSpecialKeys);
+	glutSpecialFunc(camLook);
+	glutDisplayFunc(displayObjOfRev);
+	glutIdleFunc(displayObjOfRev);
 	glEnable(GL_DEPTH_TEST);
 	initLighting();
-	glClearColor(1.0f, 0.25f, 1.0f,0.0f);  // background is white
-	//glEnable(GL_FLAT);
-    glShadeModel(GL_SMOOTH);
-	glEnable(GL_SMOOTH);
+	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);  // background is white
+
 	glViewport(0, 0, 640, 480);
 
 	glutMainLoop();
