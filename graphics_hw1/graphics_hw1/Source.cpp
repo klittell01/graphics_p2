@@ -1,6 +1,10 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <string>
 
 #include <iostream>
+#include <istream>
+#include <sstream>
+#include <iterator> 
 
 #include <fstream>
 
@@ -32,68 +36,90 @@ using namespace std;
 
 //<<<<<<<<<<<<<<<<<<< axis >>>>>>>>>>>>>>
 
+int size = 1024, pos;
+int c;
+char *buffer = (char *)malloc(1024);
 float angle = 0.0f;
-float myX = 50;
-float myY = 50;
-float myZ = 50;
+float myX = 0;
+float myY = 0;
+float myZ = 0;
 float lx = 0.0f;
 float lz = -0.1f;
+float pi = 3.1415;
+float yawL, yawR;
+int thisVert = 0;
+float verts[2058];
 
-void axis(double length)
-
-{ // draw a z-axis, with cone at end
-
-	glPushMatrix();
-
-	glBegin(GL_LINES);
-
-	glVertex3d(0, 0, 0); glVertex3d(0, 0, length); // along the z-axis
-
-	glEnd();
-
-	glTranslated(0, 0, length - 0.2);
-
-	glutWireCone(0.04, 0.2, 12, 9);
-
-	glPopMatrix();
-
-}
-
-//<<<<<<<<<<<<<<<<<<<<<<<<<<<<< displayWire >>>>>>>>>>>>>>>>>>>>>>
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<< display obj of revolution >>>>>>>>>>>>>>>>>>>>>>
 
 void displayObjOfRev(void)
 
 {
 	Mesh * M;
 	M = new Mesh();
+	Mesh * N;
+	N = new Mesh();
 
 	glMatrixMode(GL_PROJECTION); // set the view volume shape
 
 	glLoadIdentity();
 
-	gluPerspective(45, 1.333, .5f, 150);
-
+	gluPerspective(45, 1.333, .5f, 500);
+	glTranslatef(myX, myY, myZ);
+	glRotatef(angle, 0, 1, 0);
 	glMatrixMode(GL_MODELVIEW); // position and aim the camera
 
 	glLoadIdentity();
+	
+	gluLookAt(333, 333, 333, 0, 0, 0, 0.0, 1.0, 0.0);
 
-	gluLookAt(myX, myY, myZ, 0, 0, 0, 0.0, 1.0, 0.0);
+
 
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glColor3d(1, 0, 0); // draw black lines
-	M->makeSurfaceMesh();
-	M->draw();
+	glScalef(.12, .12, .12);
+
+	glBegin(GL_LINES);
+	for (int j = 0; j < thisVert; j += 3) {
+		glVertex3d(verts[j], verts[j + 1], verts[j + 2]);
+	}
+	glEnd();
+	//M->makeSurfaceMesh();
+	//M->draw();
+	//N->makeSurfaceMesh2();
+	//N->draw();
+
+	glPushMatrix();
+
+	glTranslated(-20.5, 10.5, 0.5); // big cube at (0.5, 0.5, 0.5)
+
+	glutWireCube(10.0);
+
+	glPopMatrix();	
+	
 
 
 
 	glFlush();
 
 }
+void pilotView (double planex, double planey, double planez,
+	double roll, double pitch, double heading)
+{
+	glMatrixMode(GL_MODELVIEW);
+	glRotated(roll, 0.0, 0.0, 1.0);
+	glRotated(pitch, 0.0, 1.0, 0.0);
+	glRotated(heading, 1.0, 0.0, 0.0);
+	glTranslated(-planex, -planey, -planez);
+}
 
 void initLighting() {
 
+	Mesh * tmp;
+	tmp = new Mesh();
+	tmp->makeSurfaceMesh2();
 	glEnable(GL_LIGHTING);
 
 	// set up light colors (ambient, diffuse, specular)
@@ -111,99 +137,59 @@ void initLighting() {
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
 	glEnable(GL_LIGHT0);                        // MUST enable each light source after configuration
 
+	//gluLookAt(100, 100, 100, 0, 0, 0, 0.0, 1.0, 0.0);
+
 }
 
-void camLook(int key, int x, int y) {	
+void camLook(unsigned char key, int x, int y) {	
 	float fraction = 0.1f;
 
 	switch (key) {
-		case GLUT_KEY_LEFT:
-			angle -= 0.01f;
-			lx = sin(angle);
-			lz = -cos(angle);
+		case '4': // strafe left
+			angle -= 0.1f;
+			//lx = sin(angle);
+			//lz = -cos(angle);
 			break;
-		case GLUT_KEY_RIGHT:
-			angle += 0.01f;
-			lx = sin(angle);
-			lz = -cos(angle);
+		case '6': // strafe right
+			angle += 0.1f;
+			//lx = sin(angle);
+			//lz = -cos(angle);
+			pilotView(myX, myY, myZ, 50, 0, 0);
 			break;
-		case GLUT_KEY_UP:
-			myX += lx * fraction;
-			myZ += lz * fraction;
+		case '5': // move forward
+			myZ = myZ + .5;
+			//myX += lx * fraction;
+			//myZ += lz * fraction;
 			break;
-		case GLUT_KEY_DOWN:
-			myX -= lx * fraction;
-			myZ -= lz * fraction;
+		case '1': // move backward
+			myZ = myZ - .5;
+			//myX -= lx * fraction;
+			//myZ -= lz * fraction;
 			break;
+		case '8': // move up
+			myY = myY - .5;
+			//myX += lx * fraction;
+			//myZ += lz * fraction;
+			break;
+		case '2': // move backward
+			myY = myY + .5;
+			//myX -= lx * fraction;
+			//myZ -= lz * fraction;
+			break;
+
+			// more advanced movements //
+
+		case 'A': // yaw left
+			yawL = 1;
 	}
 }
 
 
+
+
 //<<<<<<<<<<<<<<<<<<<<<< main >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-void main(int argc, char **argv)
-
-{
-	//std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
-	//std::vector< vec3 > temp_vertices;
-	//std::vector< vec2 > temp_uvs;
-	//std::vector< vec3 > temp_normals;
-
-	//FILE * file = fopen(path, "r");
-	//if (file == NULL) {
-	//	printf("Impossible to open the file !\n");
-	//	return false;
-	//}
-
-	//while (1) {
-
-	//	char lineHeader[128];
-	//	// read the first word of the line
-	//	int res = fscanf(file, "%s", lineHeader);
-	//	if (res == EOF) {
-	//		break; // EOF = End Of File. Quit the loop.
-	//	}
-	//	if (strcmp(lineHeader, "v") == 0) {
-	//		glm::vec3 vertex;
-	//		fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
-	//		temp_vertices.push_back(vertex);
-	//	}
-	//	else if (strcmp(lineHeader, "vt") == 0) {
-	//		glm::vec2 uv;
-	//		fscanf(file, "%f %f\n", &uv.x, &uv.y);
-	//		temp_uvs.push_back(uv);
-	//	}
-	//	else if (strcmp(lineHeader, "vn") == 0) {
-	//		glm::vec3 normal;
-	//		fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z);
-	//		temp_normals.push_back(normal);
-	//	}
-	//	else if (strcmp(lineHeader, "f") == 0) {
-	//		std::string vertex1, vertex2, vertex3;
-	//		unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
-	//		int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2]);
-	//		if (matches != 9) {
-	//			printf("File can't be read by our simple parser : ( Try exporting with other options\n");
-	//			return false;
-	//		}
-	//		vertexIndices.push_back(vertexIndex[0]);
-	//		vertexIndices.push_back(vertexIndex[1]);
-	//		vertexIndices.push_back(vertexIndex[2]);
-	//		uvIndices.push_back(uvIndex[0]);
-	//		uvIndices.push_back(uvIndex[1]);
-	//		uvIndices.push_back(uvIndex[2]);
-	//		normalIndices.push_back(normalIndex[0]);
-	//		normalIndices.push_back(normalIndex[1]);
-	//		normalIndices.push_back(normalIndex[2]);
-	//	}
-	//}
-	//
-	//// For each vertex of each triangle
-	//for (unsigned int i = 0; i < vertexIndices.size(); i++) {
-	//	unsigned int vertexIndex = vertexIndices[i];
-	//	glm::vec3 vertex = temp_vertices[vertexIndex - 1];
-	//	out_vertices.push_back(vertex);
-	//}
+void main(int argc, char **argv){
 
 	glutInit(&argc, argv);
 
@@ -215,7 +201,37 @@ void main(int argc, char **argv)
 
 	glutCreateWindow("Graphics Project 2");
 
-	glutSpecialFunc(camLook);
+
+	string token;
+	string delim = " ";
+	int size = 1024, pos;
+	int c;
+	char *buffer = (char *)malloc(size);
+	ifstream infile("bull.obj", ios::in);
+	char myLine[1024];
+	//FILE * objFile;
+	//objFile = fopen("myobj.obj", "r");
+
+
+	while (infile) {
+		infile.getline(myLine, 1024);
+		if (myLine[0] == 'v' && myLine[1] == 'n') {
+			std::istringstream iss(myLine);
+			vector<string> results(istream_iterator<string>{iss}, istream_iterator<string>());
+			//norm[thisVert].set(stof(results[1]), stof(results[2]), stof(results[3]));
+		}
+		else if (myLine[0] == 'v') {
+			std::istringstream iss(myLine);
+			vector<string> results(istream_iterator<string>{iss}, istream_iterator<string>());
+			// put the points into a our point array
+			for (int i = 0; i < 3; i++) {
+				verts[thisVert + i] = stof(results[i + 1]);
+			}
+		}
+		thisVert += 3;
+	}
+
+	glutKeyboardFunc(camLook);
 	glutDisplayFunc(displayObjOfRev);
 	glutIdleFunc(displayObjOfRev);
 	glEnable(GL_DEPTH_TEST);

@@ -1,4 +1,5 @@
-﻿//@@@@@@@@@@@@@@@@@@ Point3 class @@@@@@@@@@@@@@@@
+﻿#define _CRT_SECURE_NO_WARNINGS
+//@@@@@@@@@@@@@@@@@@ Point3 class @@@@@@@@@@@@@@@@
 
 class Point3 {
 
@@ -205,15 +206,15 @@ public:
 
 
 	double X(double u, double v) {
-		return (cos(u)*cos(v));
+		return (cos(u)*cos(v)) *10;
 	}
 
 	double Y(double u, double v) {
-		return (cos(v)*sin(u));
+		return (cos(v)*sin(u)) *10;
 	}
 
 	double Z(double u, double v) {
-		return (sin(v));
+		return (sin(v)) *10;
 	}
 	double nx(double u, double v) {
 		return((-1 * cos(u))*X(u, v));
@@ -239,73 +240,210 @@ public:
 
 		double delU = (uMax - uMin) / (numValsU - 1);
 
-		double delV = (vMax - vMin) / (numValsV - 1);
+double delV = (vMax - vMin) / (numValsV - 1);
 
 
 
-		numVerts = numValsU * numValsV + 1; // total # of vertices
+numVerts = numValsU * numValsV + 1; // total # of vertices
 
-		numFaces = (numValsU - 1) * (numValsV - 1); // # of faces
+numFaces = (numValsU - 1) * (numValsV - 1); // # of faces
 
-		numNorms = numVerts; // for smooth shading - one normal per vertex
+numNorms = numVerts; // for smooth shading - one normal per vertex
 
-		pt = new Point3[numVerts];  assert(pt != NULL); // make space 
+pt = new Point3[numVerts];  assert(pt != NULL); // make space 
 
-		face = new Face[numFaces];    assert(face != NULL);
+face = new Face[numFaces];    assert(face != NULL);
 
-		norm = new Vector3[numNorms]; assert(norm != NULL);
+norm = new Vector3[numNorms]; assert(norm != NULL);
 
 
 
-		for (i = 0, u = uMin; i < numValsU; i++, u += delU)
+for (i = 0, u = uMin; i < numValsU; i++, u += delU)
 
-			for (j = 0, v = vMin; j < numValsV; j++, v += delV)
+	for (j = 0, v = vMin; j < numValsV; j++, v += delV)
 
-			{
+	{
 
-				int whichVert = i * numValsV + j; //index of the vertex and normal
+		int whichVert = i * numValsV + j; //index of the vertex and normal
 
-												  // set this vertex: use functions X, Y, and Z
+										  // set this vertex: use functions X, Y, and Z
 
-				pt[whichVert].set(X(u, v), Y(u, v), Z(u, v));
+		pt[whichVert].set(X(u, v), Y(u, v), Z(u, v));
 
-				// set the normal at this vertex: use functions nx, ny, nz
+		// set the normal at this vertex: use functions nx, ny, nz
 
-				norm[whichVert].set(nx(u, v), ny(u, v), nz(u, v));
+		norm[whichVert].set(nx(u, v), ny(u, v), nz(u, v));
 
-				norm[whichVert].normalize();
+		norm[whichVert].normalize();
 
-				// make quadrilateral
+		// make quadrilateral
 
-				if (i > 0 && j > 0) // when to compute next face
+		if (i > 0 && j > 0) // when to compute next face
 
-				{
+		{
 
-					int whichFace = (i - 1) * (numValsV - 1) + (j - 1);						face[whichFace].vert = new VertexID[4];
+			int whichFace = (i - 1) * (numValsV - 1) + (j - 1);						
+			
+			face[whichFace].vert = new VertexID[4];
 
-					assert(face[whichFace].vert != NULL);
+			assert(face[whichFace].vert != NULL);
 
-					face[whichFace].nVerts = 4;
+			face[whichFace].nVerts = 4;
 
-					face[whichFace].vert[0].vertIndex = // same as norm index
+			face[whichFace].vert[0].vertIndex = // same as norm index
 
-						face[whichFace].vert[0].normIndex = whichVert;
+				face[whichFace].vert[0].normIndex = whichVert;
 
-					face[whichFace].vert[1].vertIndex =
+			face[whichFace].vert[1].vertIndex =
 
-						face[whichFace].vert[1].normIndex = whichVert - 1;
+				face[whichFace].vert[1].normIndex = whichVert - 1;
 
-					face[whichFace].vert[2].vertIndex =
+			face[whichFace].vert[2].vertIndex =
 
-						face[whichFace].vert[2].normIndex = whichVert - numValsV - 1;
+				face[whichFace].vert[2].normIndex = whichVert - numValsV - 1;
 
-					face[whichFace].vert[3].vertIndex =
+			face[whichFace].vert[3].vertIndex =
 
-						face[whichFace].vert[3].normIndex = whichVert - numValsV;
+				face[whichFace].vert[3].normIndex = whichVert - numValsV;
 
-				}
+		}
 
+	}
+
+	}
+
+
+
+
+	void makeSurfaceMesh2()
+
+	{
+
+		string token;
+		string delim = " ";
+		int size = 1024, pos;
+		int c;
+		char *buffer = (char *)malloc(size);
+		ifstream infile("myobj.obj", ios::in);
+		char myLine[1024];
+		int thisVert = 0;
+		//FILE * objFile;
+		//objFile = fopen("myobj.obj", "r");
+
+		pt = new Point3[1024];  assert(pt != NULL); // make space
+
+		face = new Face[1024];    assert(face != NULL);
+
+		norm = new Vector3[1024]; assert(norm != NULL);
+
+
+		while (infile) {
+			infile.getline(myLine, 1024);
+			if (myLine[0] == 'v' && myLine[1] == 'n') {
+				std::istringstream iss(myLine);
+				vector<string> results(istream_iterator<string>{iss}, istream_iterator<string>());
+				norm[thisVert].set(stof(results[1]), stof(results[2]), stof(results[3]));
 			}
+			else if (myLine[0] == 'v') {
+				std::istringstream iss(myLine); 
+				vector<string> results(istream_iterator<string>{iss}, istream_iterator<string>());
+				// put the points into a our point array
+				pt[thisVert].set(stof(results[1]), stof(results[2]), stof(results[3]));
+			}
+			else if (myLine[0] == 'f') {
+				std::istringstream iss(myLine);
+				vector<string> results(istream_iterator<string>{iss}, istream_iterator<string>());
+
+				face[thisVert].vert = new VertexID[4];
+
+				face[thisVert].nVerts = 4;
+
+				face[thisVert].vert[0].vertIndex = face[thisVert].vert[0].normIndex = thisVert;
+				
+				face[thisVert].vert[1].vertIndex = face[thisVert].vert[1].normIndex = thisVert - 1;
+
+				face[thisVert].vert[2].vertIndex = face[thisVert].vert[2].normIndex = thisVert - 2;
+
+				face[thisVert].vert[3].vertIndex = face[thisVert].vert[3].normIndex =thisVert - 4;
+			}
+			thisVert += 1;
+		}
+
+		//int i, j, numValsU = 100, numValsV = 100;// set these
+
+		//double u, v, uMin = -3.14 / 2, vMin = 0, uMax = 3.14 / 2, vMax = 2 * 3.14;
+
+		//double delU = (uMax - uMin) / (numValsU - 1);
+
+		//double delV = (vMax - vMin) / (numValsV - 1);
+
+
+
+		//numVerts = numValsU * numValsV + 1; // total # of vertices
+
+		//numFaces = (numValsU - 1) * (numValsV - 1); // # of faces
+
+		//numNorms = numVerts; // for smooth shading - one normal per vertex
+
+		//pt = new Point3[numVerts];  assert(pt != NULL); // make space 
+
+		//face = new Face[numFaces];    assert(face != NULL);
+
+		//norm = new Vector3[numNorms]; assert(norm != NULL);
+
+
+
+		//for (i = 0, u = uMin; i < numValsU; i++, u += delU)
+
+		//	for (j = 0, v = vMin; j < numValsV; j++, v += delV)
+
+		//	{
+
+		//		int whichVert = i * numValsV + j; //index of the vertex and normal
+
+		//										  // set this vertex: use functions X, Y, and Z
+
+		//		pt[whichVert].set(X(u, v), Y(u, v), Z(u, v));
+
+		//		// set the normal at this vertex: use functions nx, ny, nz
+
+		//		norm[whichVert].set(nx(u, v), ny(u, v), nz(u, v));
+
+		//		norm[whichVert].normalize();
+
+		//		// make quadrilateral
+
+		//		if (i > 0 && j > 0) // when to compute next face
+
+		//		{
+
+		//			int whichFace = (i - 1) * (numValsV - 1) + (j - 1);						
+		
+		//			face[whichFace].vert = new VertexID[4];
+
+		//			assert(face[whichFace].vert != NULL);
+
+		//			face[whichFace].nVerts = 4;
+
+		//			face[whichFace].vert[0].vertIndex = // same as norm index
+
+		//				face[whichFace].vert[0].normIndex = whichVert;
+
+		//			face[whichFace].vert[1].vertIndex =
+
+		//				face[whichFace].vert[1].normIndex = whichVert - 1;
+
+		//			face[whichFace].vert[2].vertIndex =
+
+		//				face[whichFace].vert[2].normIndex = whichVert - numValsV - 1;
+
+		//			face[whichFace].vert[3].vertIndex =
+
+		//				face[whichFace].vert[3].normIndex = whichVert - numValsV;
+
+		//		}
+
+		//	}
 
 	}
 
