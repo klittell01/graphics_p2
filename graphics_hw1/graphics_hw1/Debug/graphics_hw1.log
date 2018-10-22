@@ -1,7 +1,9 @@
 ﻿  Source.cpp
 c:\users\kevin\desktop\fall 2018\graphics\graphics_p2\graphics_hw1\graphics_hw1\meshclass.h(324): warning C4101: 'pos': unreferenced local variable
 c:\users\kevin\desktop\fall 2018\graphics\graphics_p2\graphics_hw1\graphics_hw1\meshclass.h(325): warning C4101: 'c': unreferenced local variable
-c:\users\kevin\desktop\fall 2018\graphics\graphics_p2\graphics_hw1\graphics_hw1\source.cpp(192): warning C4326: return type of 'main' should be 'int' instead of 'void'
-c:\users\kevin\desktop\fall 2018\graphics\graphics_p2\graphics_hw1\graphics_hw1\source.cpp(207): warning C4101: 'pos': unreferenced local variable
-c:\users\kevin\desktop\fall 2018\graphics\graphics_p2\graphics_hw1\graphics_hw1\source.cpp(208): warning C4101: 'c': unreferenced local variable
+c:\users\kevin\desktop\fall 2018\graphics\graphics_p2\graphics_hw1\graphics_hw1\source.cpp(136): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'double'
+c:\users\kevin\desktop\fall 2018\graphics\graphics_p2\graphics_hw1\graphics_hw1\source.cpp(138): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'double'
+c:\users\kevin\desktop\fall 2018\graphics\graphics_p2\graphics_hw1\graphics_hw1\source.cpp(232): warning C4326: return type of 'main' should be 'int' instead of 'void'
+c:\users\kevin\desktop\fall 2018\graphics\graphics_p2\graphics_hw1\graphics_hw1\source.cpp(247): warning C4101: 'pos': unreferenced local variable
+c:\users\kevin\desktop\fall 2018\graphics\graphics_p2\graphics_hw1\graphics_hw1\source.cpp(248): warning C4101: 'c': unreferenced local variable
   graphics_hw1.vcxproj -> C:\Users\kevin\Desktop\Fall 2018\Graphics\graphics_p2\graphics_hw1\Debug\graphics_hw1.exe

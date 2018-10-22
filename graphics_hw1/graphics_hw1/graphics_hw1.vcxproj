@@ -115,12 +115,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MyCam.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glm\glm\vec3.hpp" />
     <ClInclude Include="glut.h" />
     <ClInclude Include="Meshclass.h" />
+    <ClInclude Include="MyCam.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="glut32.lib" />

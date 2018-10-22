@@ -47,8 +47,40 @@ float lx = 0.0f;
 float lz = -0.1f;
 float pi = 3.1415;
 float yawL, yawR;
+float roll = 0.1f;
 int thisVert = 0;
-float verts[2058];
+int thisNorm = 0;
+float verts[4096];
+float norms[4096];
+
+MyCam myCam;
+//
+//public void pan(float turnSpeed)
+//{
+//	totalPan += turnSpeed;
+//
+//	updateOrientation();
+//}
+//
+//public void tilt(float turnSpeed)
+//{
+//	totalTilt += turnSpeed;
+//
+//	updateOrientation();
+//}
+//
+//private void updateOrientation()
+//{
+//	float afterTiltX = 0.0f; // Not used. Only to make things clearer
+//	float afterTiltY = (float)Math.sin(totalTilt));
+//	float afterTiltZ = (float)Math.cos(totalTilt));
+//
+//	float vecX = (float)Math.sin(totalPan) * afterTiltZ;
+//	float vecY = afterTiltY;
+//	float vecZ = (float)Math.cos(totalPan) * afterTiltZ;
+//
+//	center = eye + vecmath.vector(vecX, vecY, vecZ);
+//}
 
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<< display obj of revolution >>>>>>>>>>>>>>>>>>>>>>
 
@@ -57,8 +89,6 @@ void displayObjOfRev(void)
 {
 	Mesh * M;
 	M = new Mesh();
-	Mesh * N;
-	N = new Mesh();
 
 	glMatrixMode(GL_PROJECTION); // set the view volume shape
 
@@ -71,7 +101,7 @@ void displayObjOfRev(void)
 
 	glLoadIdentity();
 	
-	gluLookAt(333, 333, 333, 0, 0, 0, 0.0, 1.0, 0.0);
+	gluLookAt(100, 100, 100, 0, 0, 0, 0.0, 1.0, 0.0);
 
 
 
@@ -81,30 +111,39 @@ void displayObjOfRev(void)
 	glColor3d(1, 0, 0); // draw black lines
 	glScalef(.12, .12, .12);
 
-	glBegin(GL_LINES);
+	glBegin(GL_LINE_LOOP);
 	for (int j = 0; j < thisVert; j += 3) {
-		glVertex3d(verts[j], verts[j + 1], verts[j + 2]);
+		glVertex3d(verts[j] * 50, verts[j + 1] * 50, verts[j + 2] * 50);
+		glNormal3f(norms[j] , norms[j + 1] , norms[j + 2] );
 	}
 	glEnd();
-	//M->makeSurfaceMesh();
-	//M->draw();
-	//N->makeSurfaceMesh2();
-	//N->draw();
+	glPushMatrix();
+	glTranslated(100, 15, 0.5);
+	M->makeSurfaceMesh();
+	M->draw();
+	glPopMatrix();
 
 	glPushMatrix();
 
-	glTranslated(-20.5, 10.5, 0.5); // big cube at (0.5, 0.5, 0.5)
+	glTranslated(-80.5, 10.5, 0.5);
 
-	glutWireCube(10.0);
+	glutWireCube(25.0);
 
 	glPopMatrix();	
-	
-
-
 
 	glFlush();
-
 }
+
+void myIdleFunction() {
+	printf("this my roll1: %d\n", roll);
+	roll = roll + 0.5f;
+	printf("this my roll2: %d\n", roll);
+	glMatrixMode(GL_MODELVIEW);
+	glRotated(roll, 0.0, 0.0, 1.0);
+	displayObjOfRev();
+}
+
+
 void pilotView (double planex, double planey, double planez,
 	double roll, double pitch, double heading)
 {
@@ -147,6 +186,8 @@ void camLook(unsigned char key, int x, int y) {
 	switch (key) {
 		case '4': // strafe left
 			angle -= 0.1f;
+			myIdleFunction();
+			//displayObjOfRev();
 			//lx = sin(angle);
 			//lz = -cos(angle);
 			break;
@@ -154,7 +195,6 @@ void camLook(unsigned char key, int x, int y) {
 			angle += 0.1f;
 			//lx = sin(angle);
 			//lz = -cos(angle);
-			pilotView(myX, myY, myZ, 50, 0, 0);
 			break;
 		case '5': // move forward
 			myZ = myZ + .5;
@@ -180,7 +220,9 @@ void camLook(unsigned char key, int x, int y) {
 			// more advanced movements //
 
 		case 'A': // yaw left
-			yawL = 1;
+			roll = roll + .5;
+			glMatrixMode(GL_MODELVIEW);
+			glRotated(roll, 0.0, 0.0, 1.0);
 	}
 }
 
@@ -207,7 +249,7 @@ void main(int argc, char **argv){
 	int size = 1024, pos;
 	int c;
 	char *buffer = (char *)malloc(size);
-	ifstream infile("bull.obj", ios::in);
+	ifstream infile("myobj.obj", ios::in);
 	char myLine[1024];
 	//FILE * objFile;
 	//objFile = fopen("myobj.obj", "r");
@@ -218,7 +260,9 @@ void main(int argc, char **argv){
 		if (myLine[0] == 'v' && myLine[1] == 'n') {
 			std::istringstream iss(myLine);
 			vector<string> results(istream_iterator<string>{iss}, istream_iterator<string>());
-			//norm[thisVert].set(stof(results[1]), stof(results[2]), stof(results[3]));
+			for (int i = 0; i < 3; i++){
+				norms[thisNorm + i] = stof(results[i + 1]);
+			}
 		}
 		else if (myLine[0] == 'v') {
 			std::istringstream iss(myLine);
@@ -233,7 +277,7 @@ void main(int argc, char **argv){
 
 	glutKeyboardFunc(camLook);
 	glutDisplayFunc(displayObjOfRev);
-	glutIdleFunc(displayObjOfRev);
+	//glutIdleFunc(myIdleFunction);
 	glEnable(GL_DEPTH_TEST);
 	initLighting();
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);  // background is white
